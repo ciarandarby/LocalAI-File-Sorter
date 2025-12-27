@@ -1,0 +1,32 @@
+{
+    "directories": [],
+    "database": "~/FileSorterDB",
+    "data_types": "config/datatypes.json",
+    "include_date": true,
+    "ignore_filetypes": [
+        "tmp",
+        "temp",
+        "lock",
+        "swp",
+        "crdownload",
+        "download",
+        "part",
+        "partial"
+    ],
+    "file_action_delay": 5,
+    "rename_files": true,
+    "sort_files": true,
+    "log_level": "INFO",
+    "max_file_size_mb": 1000,
+    "file_stability_checks": 5,
+    "file_stability_timeout": 300,
+    "file_check_interval": 2.0,
+    "ai_enabled": true,
+    "ai_enabled_extensions": [
+        "png",
+        "jpg",
+        "jpeg",
+        "pdf"
+    ],
+    "ai_command": "native"
+}

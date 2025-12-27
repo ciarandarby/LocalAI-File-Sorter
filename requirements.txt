@@ -1,0 +1,4 @@
+python-box
+watchdog
+pyobjc-framework-Cocoa
+pyobjc-framework-Vision
