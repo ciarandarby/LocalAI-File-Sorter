@@ -9,6 +9,8 @@ class AIHandler:
         self.command_template = config.get('ai_command', 'native')
 
     def get_new_filename(self, file_path: str) -> Optional[str]:
+        if '.Screenshot' in file_path:
+            file_path = file_path.replace('.Screenshot', 'Screenshot')
         if not self.enabled:
             return None
         
@@ -91,9 +93,6 @@ class AIHandler:
             except Exception as e:
                 logging.error(f'Native Classification failed: {e}')
 
-            return None
-        except Exception as e:
-            logging.error(f'Native Vision analysis failed: {e}')
             return None
         except Exception as e:
             logging.error(f'Native Vision analysis failed: {e}')

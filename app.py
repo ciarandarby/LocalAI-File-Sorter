@@ -52,6 +52,7 @@ class Setup:
         return Box.from_json(filename=self.config_path)
 
     def start(self) -> dict:
+        logging.info(f'Config found: {self.config_path}')
         self._check_config()
         return self._load_config()
 

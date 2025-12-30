@@ -18,7 +18,7 @@ class Domain:
             return Box.from_json(filename=self.data_types_json).get(self.filepath.split('.')[-1:][0]).upper()
         except Exception as e:
             print(f'Cannot get datatype for filename {self.filepath}, fallback to "UNKNOWN". Error: {e}')
-            return 'UNKNOWN'
+            return self.filepath.split('.')[-1:][0].upper()
 
 class ProcessFiles:
     def __init__(self, ai_bridge: Optional[str], config: dict) -> None:
@@ -28,6 +28,8 @@ class ProcessFiles:
         self.ignore = config.ignore_filetypes
         self.include_date = config.include_date
         self.database = config.database
+        if not os.path.exists(self.database):
+            os.makedirs(self.database, exist_ok=True)
         self.file_action_delay = config.file_action_delay
         self.rename_files = config.rename_files
         self.stability_checks = getattr(config, 'file_stability_checks', 5)
@@ -40,9 +42,14 @@ class ProcessFiles:
         self.file_listener.start()
 
     def _base_name(self, file_name: str) -> str:
+        if '.Screenshot' in file_name:
+            file_name.replace('.Screenshot', 'Screenshot')
         return f'[{datetime.now().strftime("%Y-%m-%d")}] {file_name}'
 
     def _save_to_db(self, path: str, domain: str, new_filename: str) -> bool:
+        if '.Screenshot' in path:
+            path = path.replace('.Screenshot', 'Screenshot')
+            logging.info('*SCREENSHOT*')
         save_dir = os.path.join(self.database, domain)
         os.makedirs(save_dir, exist_ok=True)
         
@@ -51,20 +58,26 @@ class ProcessFiles:
         
         counter = 1
         while os.path.exists(destination):
-            destination = os.path.join(save_dir, f'{name}_{counter}{ext}')
+            destination = os.path.join(save_dir, f'{name} ({counter}){ext}')
             counter += 1
             
         try:
+            if '.Screenshot' in path:
+                path.replace('.Screenshot', 'Screenshot')
             shutil.move(path, destination)
             logging.info(f'Moved {path} -> {destination}')
             return True
         except Exception as e:
+            if '.Screenshot' in path:
+                return False
             logging.error(f'Move failed for {path}: {e}')
             return False
 
     def _on_file_created(self, file_path: str) -> None:
+        if '.screenshot' in file_path.lower():
+            file_path.replace('.Screenshot', 'Screenshot')
         time.sleep(self.file_action_delay)
-        if not self._is_file_ready(file_path):
+        if not self._is_file_ready(file_path) and 'screenshot' not in file_path.lower():
             return
 
         ext = file_path.split('.')[-1].lower()
@@ -72,6 +85,8 @@ class ProcessFiles:
             return
 
         filename = os.path.basename(file_path)
+        if '.Screenshot' in filename:
+            filename.replace('.Screenshot', 'Screenshot')
         if filename.startswith(('~$', 'temp_', 'tmp_', '.DS_Store')) or \
            any(x in filename for x in ['~', '.tmp', '.temp', '.crdownload', '.part']):
             return

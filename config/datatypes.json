@@ -284,5 +284,6 @@
   "zip": "ARCHIVE",
   "zipx": "ARCHIVE",
   "zsh": "CODE",
-  "zst": "ARCHIVE"
+  "zst": "ARCHIVE",
+  "xliff": "EXCHANGE"
 }

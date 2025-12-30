@@ -1,15 +1,18 @@
-from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileCreatedEvent
+from watchdog.events import FileSystemEvent, FileSystemEventHandler, FileCreatedEvent, FileModifiedEvent
 from watchdog.observers import Observer
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 class CallbackModel(FileSystemEventHandler):
     def __init__(self, callback: Callable[[str], None]) -> None:
         super().__init__()
         self.callback = callback
 
-    def on_created(self, event: FileCreatedEvent) -> None:
+    def on_created(self, event: Optional[FileCreatedEvent]) -> None:
         if event.is_directory:
             return
+        event_path = event.src_path
+        if '.Screenshot' in event_path:
+            event_path.replace('.Screenshot', 'Screenshot')
         self.callback(event.src_path)
 
 
